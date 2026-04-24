@@ -62,34 +62,35 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-background">
-      <div className="max-w-3xl mx-auto px-4 py-16">
+      <div className="max-w-3xl mx-auto px-4 py-8 sm:py-16">
 
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-xs text-muted-foreground mb-6">
+        <div className="text-center mb-8 sm:mb-12">
+          <div className="inline-flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-xs text-muted-foreground mb-4 sm:mb-6">
             <Globe className="h-3 w-3" />
             REST Mock Explorer
           </div>
-          <h1 className="text-4xl font-bold text-foreground mb-3 tracking-tight">bmocks</h1>
-          <p className="text-muted-foreground text-lg">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-3 tracking-tight">bmocks</h1>
+          <p className="text-muted-foreground text-base sm:text-lg">
             Navigate to any route — it calls your API automatically
           </p>
         </div>
 
         {/* Concept visual */}
-        <Card className="mb-6 overflow-hidden">
+        <Card className="mb-4 sm:mb-6 overflow-hidden">
           <CardContent className="p-0">
-            <div className="bg-muted/40 px-6 py-4 border-b">
+            <div className="bg-muted/40 px-4 sm:px-6 py-3 sm:py-4 border-b">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">How it works</p>
             </div>
-            <div className="px-6 py-5 space-y-3">
+            <div className="px-4 sm:px-6 py-4 sm:py-5 space-y-3">
               {["shifts", "users/:id"].map((example) => (
-                <div key={example} className="flex items-center gap-3 text-sm">
-                  <code className="bg-muted px-3 py-1.5 rounded font-mono text-foreground min-w-0 flex-shrink-0">
+                <div key={example} className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3 text-sm">
+                  <code className="bg-muted px-2.5 py-1.5 rounded font-mono text-foreground text-xs sm:text-sm">
                     yourdomain.com/<span className="text-primary font-semibold">{example}</span>
                   </code>
-                  <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  <code className="bg-muted px-3 py-1.5 rounded font-mono text-muted-foreground min-w-0 truncate">
+                  <ChevronRight className="h-3.5 w-3.5 text-muted-foreground hidden sm:block flex-shrink-0" />
+                  <span className="text-muted-foreground text-xs sm:hidden pl-1">↓</span>
+                  <code className="bg-muted px-2.5 py-1.5 rounded font-mono text-muted-foreground text-xs sm:text-sm truncate">
                     {displayUrl}/<span className="text-foreground">{example}</span>
                   </code>
                 </div>
@@ -99,19 +100,19 @@ export default function Home() {
         </Card>
 
         {/* API Methods */}
-        <Card className="mb-6">
+        <Card className="mb-4 sm:mb-6">
           <CardContent className="p-0">
-            <div className="bg-muted/40 px-6 py-4 border-b">
+            <div className="bg-muted/40 px-4 sm:px-6 py-3 sm:py-4 border-b">
               <p className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Available operations</p>
             </div>
             <div className="divide-y">
               {METHODS.map(({ method, path, desc, color }) => (
-                <div key={method + path} className="flex items-center gap-4 px-6 py-3">
-                  <span className={`text-xs font-bold px-2 py-0.5 rounded border font-mono ${color} w-16 text-center flex-shrink-0`}>
+                <div key={method + path} className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3">
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded border font-mono ${color} w-14 sm:w-16 text-center flex-shrink-0`}>
                     {method}
                   </span>
-                  <code className="text-sm font-mono text-foreground flex-1">{path}</code>
-                  <span className="text-sm text-muted-foreground hidden sm:block">{desc}</span>
+                  <code className="text-xs sm:text-sm font-mono text-foreground flex-1 truncate">{path}</code>
+                  <span className="text-xs sm:text-sm text-muted-foreground hidden sm:block flex-shrink-0">{desc}</span>
                 </div>
               ))}
             </div>
@@ -120,26 +121,31 @@ export default function Home() {
 
         {/* Navigate */}
         <Card className="mb-4">
-          <CardContent className="pt-6">
-            <div className="flex gap-2">
-              <div className="flex-1 flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-ring">
-                <span className="px-3 py-2 bg-muted text-muted-foreground text-sm border-r whitespace-nowrap font-mono">
-                  {displayUrl}/
-                </span>
-                <Input
-                  className="border-0 focus-visible:ring-0 rounded-none font-mono"
-                  placeholder="shifts"
-                  value={resourceInput}
-                  onChange={(e) => setResourceInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleNavigate()}
-                />
+          <CardContent className="pt-5 sm:pt-6 px-4 sm:px-6 pb-5 sm:pb-6">
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <div className="flex-1 flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-ring min-w-0">
+                  <span className="px-2 sm:px-3 py-2 bg-muted text-muted-foreground text-xs sm:text-sm border-r whitespace-nowrap font-mono hidden sm:block">
+                    {displayUrl}/
+                  </span>
+                  <span className="px-2 py-2 bg-muted text-muted-foreground text-xs border-r whitespace-nowrap font-mono sm:hidden">
+                    /
+                  </span>
+                  <Input
+                    className="border-0 focus-visible:ring-0 rounded-none font-mono text-sm"
+                    placeholder="shifts"
+                    value={resourceInput}
+                    onChange={(e) => setResourceInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleNavigate()}
+                  />
+                </div>
+                <Button onClick={handleNavigate} disabled={!resourceInput.trim()}>
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
               </div>
-              <Button onClick={handleNavigate} disabled={!resourceInput.trim()}>
-                <ArrowRight className="h-4 w-4" />
-              </Button>
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="mt-3 sm:mt-4 flex flex-wrap gap-2">
               {QUICK.map((r) => (
                 <Button
                   key={r}

@@ -205,7 +205,7 @@ export function RecordModal({ open, mode, item, templateRecord, onClose, onSave 
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-xl max-h-[85vh] flex flex-col" aria-describedby={undefined}>
+      <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-xl max-h-[85vh] flex flex-col" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{TITLES[mode]}</DialogTitle>
         </DialogHeader>

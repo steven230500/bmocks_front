@@ -24,6 +24,15 @@ export const useConfigStore = create<ConfigState>()(
     }),
     {
       name: "api-config",
+      version: 1,
+      migrate(persisted) {
+        const s = (persisted ?? {}) as Partial<ConfigState>
+        return {
+          baseUrl: s.baseUrl ?? "https://bmocks.com",
+          authHeader: s.authHeader ?? "",
+          idField: s.idField ?? "id",
+        }
+      },
     }
   )
 )

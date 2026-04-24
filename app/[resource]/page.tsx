@@ -58,27 +58,27 @@ export default function ResourcePage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center gap-2 sm:gap-4">
           <Button variant="ghost" size="icon" onClick={() => router.push("/")}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <div className="flex-1">
-            <h1 className="text-xl font-semibold">/{resource}</h1>
-            <p className="text-sm text-muted-foreground font-mono">
+          <div className="flex-1 min-w-0">
+            <h1 className="text-base sm:text-xl font-semibold truncate">/{resource}</h1>
+            <p className="text-xs sm:text-sm text-muted-foreground font-mono truncate hidden sm:block">
               {baseUrl}/{resource}
             </p>
           </div>
-          <Button variant="outline" size="icon" onClick={refresh} disabled={loading}>
+          <Button variant="outline" size="icon" onClick={refresh} disabled={loading} className="flex-shrink-0">
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           </Button>
-          <Button onClick={openCreate}>
-            <Plus className="h-4 w-4 mr-2" />
-            Create
+          <Button onClick={openCreate} className="flex-shrink-0">
+            <Plus className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">Create</span>
           </Button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 py-6">
+      <main className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         {error ? (
           <Card className="border-destructive">
             <CardContent className="py-8 text-center space-y-4">

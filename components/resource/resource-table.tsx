@@ -122,7 +122,7 @@ export function ResourceTable({
 
   return (
     <Card className="overflow-hidden">
-      <div className="px-6 py-3 border-b bg-muted/30 flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-3 border-b bg-muted/30 flex items-center justify-between">
         <span className="text-sm text-muted-foreground">
           <span className="font-semibold text-foreground">{data.length}</span>{" "}
           record{data.length !== 1 && "s"}
@@ -133,11 +133,11 @@ export function ResourceTable({
           <thead>
             <tr className="border-b">
               {columns.map((col) => (
-                <th key={col} className="px-5 py-3 text-left font-normal">
+                <th key={col} className="px-3 sm:px-5 py-3 text-left font-normal">
                   <ColumnHeader name={col} />
                 </th>
               ))}
-              <th className="px-5 py-3 text-right">
+              <th className="px-3 sm:px-5 py-3 text-right">
                 <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Actions
                 </span>
@@ -151,12 +151,12 @@ export function ResourceTable({
                 className="hover:bg-muted/40 transition-colors group"
               >
                 {columns.map((col) => (
-                  <td key={col} className="px-5 py-3.5 max-w-[220px]">
+                  <td key={col} className="px-3 sm:px-5 py-3 sm:py-3.5 max-w-[140px] sm:max-w-[220px]">
                     <CellValue value={item[col]} />
                   </td>
                 ))}
-                <td className="px-5 py-3.5">
-                  <div className="flex gap-0.5 justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                <td className="px-3 sm:px-5 py-3 sm:py-3.5">
+                  <div className="flex gap-0.5 justify-end sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                     <Button
                       variant="ghost"
                       size="icon"
