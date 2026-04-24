@@ -105,6 +105,7 @@ export default function ResourcePage() {
         open={modalOpen}
         mode={modalMode}
         item={currentItem}
+        templateRecord={data[0]}
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
       />

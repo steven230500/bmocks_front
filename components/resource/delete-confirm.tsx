@@ -18,7 +18,7 @@ interface Props {
 export function DeleteConfirm({ id, onClose, onConfirm }: Props) {
   return (
     <Dialog open={!!id} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Delete record</DialogTitle>
         </DialogHeader>

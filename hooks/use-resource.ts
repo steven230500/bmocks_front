@@ -5,11 +5,12 @@ import { useConfigStore } from "@/lib/config-store"
 import { buildUrl, apiFetch } from "@/lib/api-client"
 import type { ResourceRecord } from "@/types"
 
-function normalizeResponse(json: unknown): ResourceRecord[] {
+function normalizeResponse(json: unknown, resource?: string): ResourceRecord[] {
   if (Array.isArray(json)) return json
   if (json && typeof json === "object") {
     const obj = json as Record<string, unknown>
-    for (const key of ["data", "items", "results"]) {
+    const candidates = ["data", "items", "results", ...(resource ? [resource] : [])]
+    for (const key of candidates) {
       if (Array.isArray(obj[key])) return obj[key] as ResourceRecord[]
     }
     return [obj]
@@ -27,7 +28,7 @@ export function useResource(resource: string) {
     async (url: string) => {
       const res = await apiFetch(url, undefined, authHeader)
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
-      return normalizeResponse(await res.json())
+      return normalizeResponse(await res.json(), resource)
     }
   )
 
@@ -49,11 +50,14 @@ export function useResource(resource: string) {
   async function update(item: ResourceRecord, body: ResourceRecord) {
     if (!baseUrl) throw new Error("No base URL configured")
     const id = getItemId(item)
-    const res = await apiFetch(
-      buildUrl(baseUrl, resource, id),
-      { method: "PUT", body: JSON.stringify(body) },
-      authHeader
-    )
+    const url = buildUrl(baseUrl, resource, id)
+    const payload = { body: JSON.stringify(body) }
+
+    let res = await apiFetch(url, { method: "PUT", ...payload }, authHeader)
+    // fall back to PATCH if server doesn't support PUT
+    if (res.status === 405) {
+      res = await apiFetch(url, { method: "PATCH", ...payload }, authHeader)
+    }
     if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
     await mutate()
   }
