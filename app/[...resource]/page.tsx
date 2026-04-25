@@ -15,7 +15,9 @@ import type { ModalMode, ResourceRecord } from "@/types"
 export default function ResourcePage() {
   const params = useParams()
   const router = useRouter()
-  const resource = params.resource as string
+  const resource = Array.isArray(params.resource)
+    ? params.resource.join("/")
+    : (params.resource as string)
   const { baseUrl } = useConfigStore()
 
   const { data, error, loading, refresh, getItemId, create, update, remove } =
