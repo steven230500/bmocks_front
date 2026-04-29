@@ -9,9 +9,14 @@ function normalizeResponse(json: unknown, resource?: string): ResourceRecord[] {
   if (Array.isArray(json)) return json
   if (json && typeof json === "object") {
     const obj = json as Record<string, unknown>
-    const candidates = ["data", "items", "results", ...(resource ? [resource] : [])]
+    const candidates = ["data", "items", "results"]
     for (const key of candidates) {
       if (Array.isArray(obj[key])) return obj[key] as ResourceRecord[]
+    }
+    if (resource && obj[resource] !== undefined) {
+      const val = obj[resource]
+      if (Array.isArray(val)) return val as ResourceRecord[]
+      if (val && typeof val === "object") return [val as ResourceRecord]
     }
     return [obj]
   }
