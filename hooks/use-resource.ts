@@ -26,7 +26,7 @@ export function useResource(resource: string) {
   const { data, error, isLoading, mutate } = useSWR<ResourceRecord[]>(
     fetchUrl,
     async (url: string) => {
-      const res = await apiFetch(url, undefined, authHeader)
+      const res = await apiFetch(url, undefined, authHeader, baseUrl)
       if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
       return normalizeResponse(await res.json(), resource)
     }
@@ -41,7 +41,8 @@ export function useResource(resource: string) {
     const res = await apiFetch(
       buildUrl(baseUrl, resource),
       { method: "POST", body: JSON.stringify(body) },
-      authHeader
+      authHeader,
+      baseUrl
     )
     if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
     await mutate()
@@ -53,10 +54,9 @@ export function useResource(resource: string) {
     const url = buildUrl(baseUrl, resource, id)
     const payload = { body: JSON.stringify(body) }
 
-    let res = await apiFetch(url, { method: "PUT", ...payload }, authHeader)
-    // fall back to PATCH if server doesn't support PUT
+    let res = await apiFetch(url, { method: "PUT", ...payload }, authHeader, baseUrl)
     if (res.status === 405) {
-      res = await apiFetch(url, { method: "PATCH", ...payload }, authHeader)
+      res = await apiFetch(url, { method: "PATCH", ...payload }, authHeader, baseUrl)
     }
     if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
     await mutate()
@@ -67,7 +67,8 @@ export function useResource(resource: string) {
     const res = await apiFetch(
       buildUrl(baseUrl, resource, id),
       { method: "DELETE" },
-      authHeader
+      authHeader,
+      baseUrl
     )
     if (!res.ok) throw new Error(`${res.status}: ${res.statusText}`)
     await mutate()

@@ -20,7 +20,7 @@ export function useEndpoints() {
   const { data, error, isLoading } = useSWR<Endpoint[]>(
     baseUrl ? `${baseUrl.replace(/\/$/, "")}/endpoints` : null,
     async (url: string) => {
-      const res = await apiFetch(url, undefined, authHeader)
+      const res = await apiFetch(url, undefined, authHeader, baseUrl)
       if (!res.ok) return []
       const json = await res.json()
       return Array.isArray(json) ? json : (json.endpoints ?? [])
