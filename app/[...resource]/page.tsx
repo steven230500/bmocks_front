@@ -52,6 +52,11 @@ export default function ResourcePage() {
     setModalOpen(false)
   }
 
+  async function handleDuplicate(item: ResourceRecord) {
+    const { [useConfigStore.getState().idField]: _id, id: _id2, _id: _id3, ...rest } = item as Record<string, unknown>
+    await create(rest as ResourceRecord)
+  }
+
   async function handleDelete(id: string) {
     await remove(id)
     setDeleteId(null)
@@ -98,6 +103,7 @@ export default function ResourcePage() {
             onView={openView}
             onEdit={openEdit}
             onDelete={(item) => setDeleteId(String(getItemId(item)))}
+            onDuplicate={handleDuplicate}
             onCreateFirst={openCreate}
           />
         )}
