@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { ArrowRight, Settings2, ChevronRight, Globe } from "lucide-react"
+import { EndpointsExplorer } from "@/components/endpoints-explorer"
 
 const METHODS = [
   { method: "GET", path: "/{resource}", desc: "List all records", color: "bg-blue-500/10 text-blue-600 border-blue-200" },
@@ -163,6 +164,11 @@ export default function Home() {
             </div>
           </CardContent>
         </Card>
+
+        {/* API Endpoints */}
+        <div className="mb-4 sm:mb-6">
+          <EndpointsExplorer />
+        </div>
 
         {/* Config toggle */}
         <div>
