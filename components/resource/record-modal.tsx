@@ -11,11 +11,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Code2 } from "lucide-react"
 import type { ModalMode, ResourceRecord } from "@/types"
-
-// ---------------------------------------------------------------------------
-// Template helpers
-// ---------------------------------------------------------------------------
 
 function makeTemplate(record: ResourceRecord): ResourceRecord {
   const out: ResourceRecord = {}
@@ -31,10 +29,6 @@ function makeTemplate(record: ResourceRecord): ResourceRecord {
   }
   return out
 }
-
-// ---------------------------------------------------------------------------
-// Form field renderer (recursive)
-// ---------------------------------------------------------------------------
 
 function FieldEditor({
   value,
@@ -71,11 +65,7 @@ function FieldEditor({
       <textarea
         value={JSON.stringify(value, null, 2)}
         onChange={(e) => {
-          try {
-            onChange(JSON.parse(e.target.value))
-          } catch {
-            // keep editing
-          }
+          try { onChange(JSON.parse(e.target.value)) } catch { /* keep editing */ }
         }}
         className="w-full h-24 font-mono text-xs p-2 border rounded-md resize-none bg-background focus:outline-none focus:ring-2 focus:ring-ring"
       />
@@ -85,9 +75,7 @@ function FieldEditor({
   if (value !== null && typeof value === "object") {
     const obj = value as ResourceRecord
     return (
-      <div
-        className={`border rounded-lg divide-y ${depth > 0 ? "bg-muted/20" : "bg-background"}`}
-      >
+      <div className={`border rounded-lg divide-y ${depth > 0 ? "bg-muted/20" : "bg-background"}`}>
         {Object.entries(obj).map(([k, v]) => (
           <FormRow
             key={k}
@@ -122,16 +110,13 @@ function FormRow({
   onChange: (v: unknown) => void
   depth?: number
 }) {
-  const isObject =
-    value !== null && typeof value === "object" && !Array.isArray(value)
+  const isObject = value !== null && typeof value === "object" && !Array.isArray(value)
 
   if (isObject) {
     return (
       <div className="space-y-2 py-3 px-3">
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-foreground/70">
-            {fieldKey}
-          </span>
+          <span className="font-mono text-xs font-semibold text-foreground/70">{fieldKey}</span>
           <div className="h-px flex-1 bg-border" />
         </div>
         <FieldEditor value={value} onChange={onChange} depth={depth} />
@@ -155,10 +140,6 @@ function FormRow({
   )
 }
 
-// ---------------------------------------------------------------------------
-// Modal
-// ---------------------------------------------------------------------------
-
 interface Props {
   open: boolean
   mode: ModalMode
@@ -176,21 +157,47 @@ const TITLES: Record<ModalMode, string> = {
 
 export function RecordModal({ open, mode, item, templateRecord, onClose, onSave }: Props) {
   const [formData, setFormData] = useState<ResourceRecord>({})
+  const [jsonMode, setJsonMode] = useState(false)
+  const [rawJson, setRawJson] = useState("")
+  const [jsonError, setJsonError] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!open) return
     setSaveError(null)
+    setJsonError(false)
 
-    if (mode === "create") {
-      setFormData(templateRecord ? makeTemplate(templateRecord) : {})
-    } else if (item) {
-      setFormData(item)
-    }
+    const initial =
+      mode === "create"
+        ? templateRecord ? makeTemplate(templateRecord) : {}
+        : item ? { ...item } : {}
+
+    setFormData(initial)
+    setRawJson(JSON.stringify(initial, null, 2))
   }, [open, mode, item, templateRecord])
 
+  function handleJsonChange(text: string) {
+    setRawJson(text)
+    try {
+      const parsed = JSON.parse(text)
+      setFormData(parsed)
+      setJsonError(false)
+    } catch {
+      setJsonError(true)
+    }
+  }
+
+  function handleToggleJsonMode(on: boolean) {
+    if (on) {
+      setRawJson(JSON.stringify(formData, null, 2))
+      setJsonError(false)
+    }
+    setJsonMode(on)
+  }
+
   async function handleSave() {
+    if (jsonError) return
     try {
       setSaving(true)
       await onSave(formData)
@@ -207,7 +214,22 @@ export function RecordModal({ open, mode, item, templateRecord, onClose, onSave 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="w-[calc(100vw-2rem)] sm:max-w-xl max-h-[85vh] flex flex-col" aria-describedby={undefined}>
         <DialogHeader>
-          <DialogTitle>{TITLES[mode]}</DialogTitle>
+          <div className="flex items-center justify-between gap-4">
+            <DialogTitle>{TITLES[mode]}</DialogTitle>
+            {mode !== "view" && (
+              <div className="flex items-center gap-2 pr-6">
+                <Code2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <Label htmlFor="json-mode-switch" className="text-xs text-muted-foreground cursor-pointer">
+                  JSON
+                </Label>
+                <Switch
+                  id="json-mode-switch"
+                  checked={jsonMode}
+                  onCheckedChange={handleToggleJsonMode}
+                />
+              </div>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto py-2 min-h-0">
@@ -215,6 +237,20 @@ export function RecordModal({ open, mode, item, templateRecord, onClose, onSave 
             <pre className="font-mono text-xs p-4 rounded-lg border bg-muted/40 overflow-x-auto whitespace-pre-wrap break-words">
               {JSON.stringify(item, null, 2)}
             </pre>
+          ) : jsonMode ? (
+            <div className="space-y-1">
+              <textarea
+                value={rawJson}
+                onChange={(e) => handleJsonChange(e.target.value)}
+                className={`w-full h-72 font-mono text-xs p-4 rounded-lg border bg-background resize-none focus:outline-none focus:ring-2 ${
+                  jsonError ? "border-destructive focus:ring-destructive" : "focus:ring-ring"
+                }`}
+                spellCheck={false}
+              />
+              {jsonError && (
+                <p className="text-xs text-destructive px-1">Invalid JSON</p>
+              )}
+            </div>
           ) : isEmpty ? (
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
@@ -226,9 +262,7 @@ export function RecordModal({ open, mode, item, templateRecord, onClose, onSave 
                 onChange={(e) => {
                   try {
                     setFormData(JSON.parse(e.target.value))
-                  } catch {
-                    // keep typing
-                  }
+                  } catch { /* keep typing */ }
                 }}
               />
             </div>
@@ -252,10 +286,8 @@ export function RecordModal({ open, mode, item, templateRecord, onClose, onSave 
 
         {mode !== "view" && (
           <DialogFooter className="pt-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave} disabled={saving}>
+            <Button variant="outline" onClick={onClose}>Cancel</Button>
+            <Button onClick={handleSave} disabled={saving || jsonError}>
               {saving ? "Saving…" : mode === "create" ? "Create" : "Save"}
             </Button>
           </DialogFooter>
